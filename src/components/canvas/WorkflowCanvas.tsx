@@ -9,7 +9,7 @@ import ReactFlow, {
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { useWorkflowStore } from '../../store/workflowStore';
-import { Plus } from 'lucide-react';
+import { Plus, Layers } from 'lucide-react';
 import {
   StartNode,
   EndNode,
@@ -18,6 +18,7 @@ import {
   ToolNode,
   ConditionalNode,
 } from '../nodes';
+import { ParallelGroupsOverlay } from './ParallelGroupsOverlay';
 
 const nodeTypes = {
   start: StartNode,
@@ -41,6 +42,7 @@ export function WorkflowCanvas() {
 
   const [showNodeMenu, setShowNodeMenu] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
+  const [showParallelGroups, setShowParallelGroups] = useState(true);
   const reactFlowInstance = useReactFlow();
 
   const onNodeClick = useCallback(
@@ -78,7 +80,8 @@ export function WorkflowCanvas() {
   );
 
   return (
-    <div className="w-full h-screen">
+    <div className="w-full h-screen relative">
+      {showParallelGroups && <ParallelGroupsOverlay />}
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -114,14 +117,29 @@ export function WorkflowCanvas() {
           }}
           className="bg-white border border-gray-200"
         />
-        <Panel position="top-left" className="bg-white rounded-lg shadow-lg p-2">
-          <button
-            onClick={handleAddNodeClick}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-          >
-            <Plus size={20} />
-            Add Node
-          </button>
+        <Panel position="top-left" className="space-y-2">
+          <div className="bg-white rounded-lg shadow-lg p-2">
+            <button
+              onClick={handleAddNodeClick}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors w-full"
+            >
+              <Plus size={20} />
+              Add Node
+            </button>
+          </div>
+          <div className="bg-white rounded-lg shadow-lg p-2">
+            <button
+              onClick={() => setShowParallelGroups(!showParallelGroups)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors w-full ${
+                showParallelGroups
+                  ? 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              <Layers size={20} />
+              Parallel Groups
+            </button>
+          </div>
         </Panel>
       </ReactFlow>
 

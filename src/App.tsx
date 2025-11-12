@@ -1,12 +1,17 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { ReactFlowProvider } from 'reactflow';
 import { WorkflowCanvas } from './components/canvas/WorkflowCanvas';
 import { NodeEditorPanel } from './components/panels/NodeEditorPanel';
+import { StateSchemaPanel } from './components/panels/StateSchemaPanel';
+import { WorkflowToolbar } from './components/panels/WorkflowToolbar';
 import { useWorkflowStore } from './store/workflowStore';
-import { FileDown, FileUp, Save, Network } from 'lucide-react';
+import { FileDown, FileUp, Save, Network, Workflow, Database } from 'lucide-react';
+
+type Tab = 'workflow' | 'state';
 
 function App() {
-  const { workflow, createNewWorkflow } = useWorkflowStore();
+  const { workflow, createNewWorkflow, selectedNodeId } = useWorkflowStore();
+  const [activeTab, setActiveTab] = useState<Tab>('workflow');
 
   useEffect(() => {
     // Initialize with a new workflow if none exists
@@ -85,6 +90,7 @@ function App() {
           </div>
 
           <div className="flex items-center gap-2">
+            <WorkflowToolbar />
             <button
               onClick={handleSave}
               className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
@@ -116,10 +122,49 @@ function App() {
           </div>
         </header>
 
+        {/* Tabs */}
+        <div className="bg-white border-b border-gray-200">
+          <div className="flex gap-1 px-6">
+            <button
+              onClick={() => setActiveTab('workflow')}
+              className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-colors ${
+                activeTab === 'workflow'
+                  ? 'border-blue-600 text-blue-600 font-medium'
+                  : 'border-transparent text-gray-600 hover:text-gray-800'
+              }`}
+            >
+              <Workflow size={18} />
+              Workflow
+            </button>
+            <button
+              onClick={() => setActiveTab('state')}
+              className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-colors ${
+                activeTab === 'state'
+                  ? 'border-blue-600 text-blue-600 font-medium'
+                  : 'border-transparent text-gray-600 hover:text-gray-800'
+              }`}
+            >
+              <Database size={18} />
+              State Schema
+              {workflow.stateSchema.fields.length > 0 && (
+                <span className="bg-blue-100 text-blue-600 text-xs px-2 py-0.5 rounded-full">
+                  {workflow.stateSchema.fields.length}
+                </span>
+              )}
+            </button>
+          </div>
+        </div>
+
         {/* Main content */}
-        <div className="flex-1 relative">
-          <WorkflowCanvas />
-          <NodeEditorPanel />
+        <div className="flex-1 relative overflow-hidden">
+          {activeTab === 'workflow' ? (
+            <>
+              <WorkflowCanvas />
+              {selectedNodeId && <NodeEditorPanel />}
+            </>
+          ) : (
+            <StateSchemaPanel />
+          )}
         </div>
       </div>
     </ReactFlowProvider>
