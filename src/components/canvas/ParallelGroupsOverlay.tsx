@@ -19,6 +19,11 @@ const GROUP_BORDER_COLORS = [
   'rgba(34, 197, 94, 0.4)',
 ];
 
+// Default dimensions for nodes that haven't been measured yet
+const DEFAULT_NODE_WIDTH = 250;
+const DEFAULT_NODE_HEIGHT = 100;
+const BOUNDING_BOX_PADDING = 20;
+
 export function ParallelGroupsOverlay() {
   const { workflow } = useWorkflowStore();
   const { getNodes } = useReactFlow();
@@ -39,11 +44,17 @@ export function ParallelGroupsOverlay() {
         const groupNodes = rfNodes.filter(n => group.includes(n.id));
         if (groupNodes.length === 0) return null;
 
-        // Calculate bounding box
-        const minX = Math.min(...groupNodes.map(n => n.position.x)) - 20;
-        const minY = Math.min(...groupNodes.map(n => n.position.y)) - 20;
-        const maxX = Math.max(...groupNodes.map(n => n.position.x + 250)) + 20; // Approximate node width
-        const maxY = Math.max(...groupNodes.map(n => n.position.y + 100)) + 20; // Approximate node height
+        // Calculate bounding box using actual node dimensions or defaults
+        const minX = Math.min(...groupNodes.map(n => n.position.x)) - BOUNDING_BOX_PADDING;
+        const minY = Math.min(...groupNodes.map(n => n.position.y)) - BOUNDING_BOX_PADDING;
+        const maxX = Math.max(...groupNodes.map(n => {
+          const nodeWidth = n.width ?? DEFAULT_NODE_WIDTH;
+          return n.position.x + nodeWidth;
+        })) + BOUNDING_BOX_PADDING;
+        const maxY = Math.max(...groupNodes.map(n => {
+          const nodeHeight = n.height ?? DEFAULT_NODE_HEIGHT;
+          return n.position.y + nodeHeight;
+        })) + BOUNDING_BOX_PADDING;
 
         const width = maxX - minX;
         const height = maxY - minY;

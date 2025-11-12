@@ -1,21 +1,73 @@
 import { useState } from 'react';
 import { useWorkflowStore } from '../../store/workflowStore';
-import { Plus, Trash2, Database } from 'lucide-react';
+import { Plus, Trash2, Database, AlertCircle } from 'lucide-react';
 import type { StateField } from '../../types/workflow';
+
+// Validates Go identifier naming rules
+function isValidGoIdentifier(name: string): boolean {
+  if (!name) return false;
+  // Must start with letter or underscore
+  // Can contain letters, digits, and underscores
+  const goIdentifierRegex = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
+  return goIdentifierRegex.test(name);
+}
 
 export function StateSchemaPanel() {
   const { workflow, updateStateSchema, addStateField, updateReducer, removeReducer } = useWorkflowStore();
   const [newFieldName, setNewFieldName] = useState('');
   const [newFieldType, setNewFieldType] = useState('string');
+  const [fieldError, setFieldError] = useState('');
 
   if (!workflow) return null;
 
-  const handleAddField = () => {
-    if (newFieldName.trim()) {
-      addStateField(newFieldName.trim(), newFieldType);
-      setNewFieldName('');
-      setNewFieldType('string');
+  const handleFieldNameChange = (value: string) => {
+    setNewFieldName(value);
+    setFieldError(''); // Clear error when user types
+  };
+
+  const validateFieldName = (name: string): string | null => {
+    const trimmedName = name.trim();
+
+    // Check if empty
+    if (!trimmedName) {
+      return 'Field name cannot be empty';
     }
+
+    // Check for valid Go identifier
+    if (!isValidGoIdentifier(trimmedName)) {
+      return 'Field name must be a valid Go identifier (start with letter/underscore, contain only letters, digits, and underscores)';
+    }
+
+    // Check for duplicates
+    if (workflow.stateSchema.fields.some(f => f.name === trimmedName)) {
+      return 'Field name already exists';
+    }
+
+    // Check for Go reserved keywords
+    const goKeywords = [
+      'break', 'case', 'chan', 'const', 'continue', 'default', 'defer',
+      'else', 'fallthrough', 'for', 'func', 'go', 'goto', 'if', 'import',
+      'interface', 'map', 'package', 'range', 'return', 'select', 'struct',
+      'switch', 'type', 'var',
+    ];
+    if (goKeywords.includes(trimmedName.toLowerCase())) {
+      return 'Field name cannot be a Go reserved keyword';
+    }
+
+    return null;
+  };
+
+  const handleAddField = () => {
+    const error = validateFieldName(newFieldName);
+    if (error) {
+      setFieldError(error);
+      return;
+    }
+
+    addStateField(newFieldName.trim(), newFieldType);
+    setNewFieldName('');
+    setNewFieldType('string');
+    setFieldError('');
   };
 
   const handleRemoveField = (fieldName: string) => {
@@ -75,14 +127,26 @@ export function StateSchemaPanel() {
         <div className="mb-6 p-4 bg-gray-50 rounded-lg">
           <h3 className="text-sm font-semibold text-gray-700 mb-3">Add State Field</h3>
           <div className="space-y-2">
-            <input
-              type="text"
-              value={newFieldName}
-              onChange={(e) => setNewFieldName(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleAddField()}
-              placeholder="Field name"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            <div>
+              <input
+                type="text"
+                value={newFieldName}
+                onChange={(e) => handleFieldNameChange(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleAddField()}
+                placeholder="Field name (e.g., userInput, messageCount)"
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+                  fieldError
+                    ? 'border-red-300 focus:ring-red-500'
+                    : 'border-gray-300 focus:ring-blue-500'
+                }`}
+              />
+              {fieldError && (
+                <div className="flex items-center gap-1 mt-1 text-xs text-red-600">
+                  <AlertCircle size={12} />
+                  <span>{fieldError}</span>
+                </div>
+              )}
+            </div>
             <select
               value={newFieldType}
               onChange={(e) => setNewFieldType(e.target.value)}
