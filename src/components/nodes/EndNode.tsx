@@ -1,7 +1,8 @@
 import { Square } from 'lucide-react';
 import { BaseNode } from './BaseNode';
+import type { EndNodeProps } from '../../types/nodeProps';
 
-export function EndNode({ data }: any) {
+export function EndNode({ data }: EndNodeProps) {
   return (
     <BaseNode
       data={data}

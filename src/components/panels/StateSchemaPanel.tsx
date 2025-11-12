@@ -4,7 +4,7 @@ import { Plus, Trash2, Database } from 'lucide-react';
 import type { StateField } from '../../types/workflow';
 
 export function StateSchemaPanel() {
-  const { workflow, updateStateSchema, addStateField, updateReducer } = useWorkflowStore();
+  const { workflow, updateStateSchema, addStateField, updateReducer, removeReducer } = useWorkflowStore();
   const [newFieldName, setNewFieldName] = useState('');
   const [newFieldType, setNewFieldType] = useState('string');
 
@@ -23,9 +23,7 @@ export function StateSchemaPanel() {
     updateStateSchema({ fields: updatedFields });
 
     // Remove associated reducer
-    const newReducers = { ...workflow.reducers };
-    delete newReducers[fieldName];
-    workflow.reducers = newReducers;
+    removeReducer(fieldName);
   };
 
   const handleToggleRequired = (fieldName: string) => {
@@ -255,7 +253,7 @@ function StateFieldEditor({
             </label>
             <select
               value={reducer?.type || 'overwrite'}
-              onChange={(e) => onUpdateReducer(field.name, e.target.value as any)}
+              onChange={(e) => onUpdateReducer(field.name, e.target.value as 'append' | 'overwrite' | 'merge' | 'custom')}
               className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="overwrite">Overwrite - Replace with new value</option>

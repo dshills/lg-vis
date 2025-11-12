@@ -7,6 +7,7 @@ import ReactFlow, {
   useReactFlow,
   BackgroundVariant,
 } from 'reactflow';
+import type { Node } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { useWorkflowStore } from '../../store/workflowStore';
 import { Plus, Layers } from 'lucide-react';
@@ -46,7 +47,7 @@ export function WorkflowCanvas() {
   const reactFlowInstance = useReactFlow();
 
   const onNodeClick = useCallback(
-    (_event: React.MouseEvent, node: any) => {
+    (_event: React.MouseEvent, node: Node) => {
       setSelectedNode(node.id);
     },
     [setSelectedNode]

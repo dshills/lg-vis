@@ -1,5 +1,6 @@
 import { useWorkflowStore } from '../../store/workflowStore';
 import { X, Trash2 } from 'lucide-react';
+import type { Node } from 'reactflow';
 
 export function NodeEditorPanel() {
   const { nodes, selectedNodeId, setSelectedNode, updateNodeData, deleteNode } = useWorkflowStore();
@@ -107,7 +108,7 @@ export function NodeEditorPanel() {
 }
 
 // Type-specific field components
-function FunctionNodeFields({ node }: { node: any }) {
+function FunctionNodeFields({ node }: { node: Node }) {
   const { updateNodeData } = useWorkflowStore();
 
   const handleCodeChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -130,7 +131,7 @@ function FunctionNodeFields({ node }: { node: any }) {
   );
 }
 
-function LLMNodeFields({ node }: { node: any }) {
+function LLMNodeFields({ node }: { node: Node }) {
   const { updateNodeData } = useWorkflowStore();
 
   return (
@@ -208,7 +209,7 @@ function LLMNodeFields({ node }: { node: any }) {
   );
 }
 
-function ToolNodeFields({ node }: { node: any }) {
+function ToolNodeFields({ node }: { node: Node }) {
   const { updateNodeData } = useWorkflowStore();
 
   return (
@@ -242,7 +243,7 @@ function ToolNodeFields({ node }: { node: any }) {
   );
 }
 
-function ConditionalNodeFields({ node }: { node: any }) {
+function ConditionalNodeFields({ node }: { node: Node }) {
   const { updateNodeData } = useWorkflowStore();
 
   return (

@@ -1,7 +1,8 @@
 import { Code2 } from 'lucide-react';
 import { BaseNode } from './BaseNode';
+import type { FunctionNodeProps } from '../../types/nodeProps';
 
-export function FunctionNode({ data }: any) {
+export function FunctionNode({ data }: FunctionNodeProps) {
   return (
     <BaseNode
       data={data}

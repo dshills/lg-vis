@@ -1,7 +1,8 @@
 import { Play } from 'lucide-react';
 import { BaseNode } from './BaseNode';
+import type { StartNodeProps } from '../../types/nodeProps';
 
-export function StartNode({ data }: any) {
+export function StartNode({ data }: StartNodeProps) {
   return (
     <BaseNode
       data={data}

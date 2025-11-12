@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { addEdge, applyEdgeChanges, applyNodeChanges } from 'reactflow';
 import type { Connection, Edge, EdgeChange, Node, NodeChange } from 'reactflow';
-import type { Workflow, StateSchema, Reducer } from '../types/workflow';
+import type { Workflow, StateSchema, Reducer, NodeType } from '../types/workflow';
 
 interface WorkflowState {
   // Current workflow
@@ -22,7 +22,7 @@ interface WorkflowState {
   // Node operations
   onNodesChange: (changes: NodeChange[]) => void;
   addNode: (type: string, position: { x: number; y: number }) => void;
-  updateNodeData: (nodeId: string, data: any) => void;
+  updateNodeData: (nodeId: string, data: Record<string, unknown>) => void;
   deleteNode: (nodeId: string) => void;
   setSelectedNode: (nodeId: string | null) => void;
 
@@ -38,6 +38,7 @@ interface WorkflowState {
 
   // Reducer operations
   updateReducer: (fieldName: string, reducer: Reducer) => void;
+  removeReducer: (fieldName: string) => void;
 }
 
 const createDefaultWorkflow = (name: string): Workflow => ({
@@ -114,7 +115,7 @@ export const useWorkflowStore = create<WorkflowState>((set, get) => ({
     if (workflow) {
       workflow.nodes.push({
         id: newNode.id,
-        type: type as any,
+        type: type as NodeType,
         position,
         data: newNode.data,
       });
@@ -238,6 +239,17 @@ export const useWorkflowStore = create<WorkflowState>((set, get) => ({
     const { workflow } = get();
     if (workflow) {
       workflow.reducers[fieldName] = reducer;
+      workflow.metadata.modified = new Date().toISOString();
+      set({ workflow: { ...workflow } });
+    }
+  },
+
+  removeReducer: (fieldName) => {
+    const { workflow } = get();
+    if (workflow && workflow.reducers[fieldName]) {
+      const newReducers = { ...workflow.reducers };
+      delete newReducers[fieldName];
+      workflow.reducers = newReducers;
       workflow.metadata.modified = new Date().toISOString();
       set({ workflow: { ...workflow } });
     }

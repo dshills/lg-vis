@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
 import { useReactFlow } from 'reactflow';
 import { useWorkflowStore } from '../../store/workflowStore';
 import { detectParallelGroups } from '../../lib/workflowValidation';
@@ -22,14 +22,11 @@ const GROUP_BORDER_COLORS = [
 export function ParallelGroupsOverlay() {
   const { workflow } = useWorkflowStore();
   const { getNodes } = useReactFlow();
-  const [groups, setGroups] = useState<string[][]>([]);
 
-  useEffect(() => {
-    if (workflow) {
-      const parallelGroups = detectParallelGroups(workflow.nodes, workflow.edges);
-      setGroups(parallelGroups);
-    }
-  }, [workflow?.nodes, workflow?.edges, workflow]);
+  const groups = useMemo(() => {
+    if (!workflow) return [];
+    return detectParallelGroups(workflow.nodes, workflow.edges);
+  }, [workflow]);
 
   if (groups.length === 0) return null;
 

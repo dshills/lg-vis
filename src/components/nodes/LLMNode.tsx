@@ -1,7 +1,8 @@
 import { Brain } from 'lucide-react';
 import { BaseNode } from './BaseNode';
+import type { LLMNodeProps } from '../../types/nodeProps';
 
-export function LLMNode({ data }: any) {
+export function LLMNode({ data }: LLMNodeProps) {
   return (
     <BaseNode
       data={data}

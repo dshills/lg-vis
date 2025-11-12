@@ -1,7 +1,8 @@
 import { Wrench } from 'lucide-react';
 import { BaseNode } from './BaseNode';
+import type { ToolNodeProps } from '../../types/nodeProps';
 
-export function ToolNode({ data }: any) {
+export function ToolNode({ data }: ToolNodeProps) {
   return (
     <BaseNode
       data={data}

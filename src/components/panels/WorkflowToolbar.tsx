@@ -1,20 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useWorkflowStore } from '../../store/workflowStore';
 import { validateWorkflow } from '../../lib/workflowValidation';
-import type { ValidationResult } from '../../lib/workflowValidation';
 import { AlertCircle, CheckCircle, AlertTriangle, Info, X } from 'lucide-react';
 
 export function WorkflowToolbar() {
   const { workflow, nodes } = useWorkflowStore();
-  const [validation, setValidation] = useState<ValidationResult | null>(null);
   const [showDetails, setShowDetails] = useState(false);
 
-  useEffect(() => {
-    if (workflow) {
-      const result = validateWorkflow(workflow.nodes, workflow.edges);
-      setValidation(result);
-    }
-  }, [workflow?.nodes, workflow?.edges, workflow]);
+  const validation = useMemo(() => {
+    if (!workflow) return null;
+    return validateWorkflow(workflow.nodes, workflow.edges);
+  }, [workflow]);
 
   if (!validation) return null;
 

@@ -45,7 +45,7 @@ function App() {
           try {
             const workflow = JSON.parse(event.target?.result as string);
             useWorkflowStore.getState().setWorkflow(workflow);
-          } catch (error) {
+          } catch {
             alert('Invalid workflow file');
           }
         };
