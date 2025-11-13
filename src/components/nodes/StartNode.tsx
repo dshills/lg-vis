@@ -6,8 +6,8 @@ export function StartNode({ data }: StartNodeProps) {
   return (
     <BaseNode
       data={data}
-      color="border-green-500"
-      icon={<Play className="text-green-600" size={20} />}
+      color="border-emerald-400 shadow-emerald-200"
+      icon={<Play className="text-emerald-600" size={22} />}
       showTargetHandle={false}
     />
   );

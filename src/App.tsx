@@ -78,43 +78,45 @@ function App() {
 
   return (
     <ReactFlowProvider>
-      <div className="flex flex-col h-screen">
+      <div className="flex flex-col h-screen bg-gradient-to-br from-slate-50 to-slate-100">
         {/* Header */}
-        <header className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Network className="text-blue-600" size={28} />
+        <header className="bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 px-6 py-4 flex items-center justify-between shadow-lg">
+          <div className="flex items-center gap-4">
+            <div className="p-2 bg-white/10 rounded-xl backdrop-blur-sm">
+              <Network className="text-blue-300" size={32} />
+            </div>
             <div>
-              <h1 className="text-xl font-bold text-gray-800">LangGraph-Go Workflow Builder</h1>
-              <p className="text-sm text-gray-500">{workflow.name}</p>
+              <h1 className="text-2xl font-bold text-white bg-clip-text">LangGraph-Go Workflow Builder</h1>
+              <p className="text-sm text-blue-200 font-medium">{workflow.name}</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <WorkflowToolbar />
             <button
               onClick={handleSave}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-all duration-200 backdrop-blur-sm border border-white/20 hover:scale-105"
             >
               <Save size={18} />
               Save
             </button>
             <button
               onClick={handleImport}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-all duration-200 backdrop-blur-sm border border-white/20 hover:scale-105"
             >
               <FileUp size={18} />
               Import
             </button>
             <button
               onClick={handleExport}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-all duration-200 backdrop-blur-sm border border-white/20 hover:scale-105"
             >
               <FileDown size={18} />
               Export
             </button>
             <button
               onClick={handleGenerateCode}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+              className="flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 font-semibold"
             >
               <FileDown size={18} />
               Generate Go Code
@@ -123,31 +125,31 @@ function App() {
         </header>
 
         {/* Tabs */}
-        <div className="bg-white border-b border-gray-200">
-          <div className="flex gap-1 px-6">
+        <div className="bg-white/80 backdrop-blur-md border-b border-gray-200 shadow-sm">
+          <div className="flex gap-2 px-6">
             <button
               onClick={() => setActiveTab('workflow')}
-              className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-colors ${
+              className={`flex items-center gap-2 px-5 py-3 border-b-3 transition-all duration-200 ${
                 activeTab === 'workflow'
-                  ? 'border-blue-600 text-blue-600 font-medium'
-                  : 'border-transparent text-gray-600 hover:text-gray-800'
+                  ? 'border-blue-600 text-blue-700 font-bold bg-blue-50/50'
+                  : 'border-transparent text-gray-600 hover:text-gray-900 hover:bg-gray-50'
               }`}
             >
-              <Workflow size={18} />
+              <Workflow size={20} />
               Workflow
             </button>
             <button
               onClick={() => setActiveTab('state')}
-              className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-colors ${
+              className={`flex items-center gap-2 px-5 py-3 border-b-3 transition-all duration-200 ${
                 activeTab === 'state'
-                  ? 'border-blue-600 text-blue-600 font-medium'
-                  : 'border-transparent text-gray-600 hover:text-gray-800'
+                  ? 'border-blue-600 text-blue-700 font-bold bg-blue-50/50'
+                  : 'border-transparent text-gray-600 hover:text-gray-900 hover:bg-gray-50'
               }`}
             >
-              <Database size={18} />
+              <Database size={20} />
               State Schema
               {workflow.stateSchema.fields.length > 0 && (
-                <span className="bg-blue-100 text-blue-600 text-xs px-2 py-0.5 rounded-full">
+                <span className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-xs px-2.5 py-0.5 rounded-full font-bold shadow-sm">
                   {workflow.stateSchema.fields.length}
                 </span>
               )}

@@ -6,8 +6,8 @@ export function EndNode({ data }: EndNodeProps) {
   return (
     <BaseNode
       data={data}
-      color="border-red-500"
-      icon={<Square className="text-red-600" size={20} />}
+      color="border-rose-400 shadow-rose-200"
+      icon={<Square className="text-rose-600" size={22} />}
       showSourceHandle={false}
     />
   );
