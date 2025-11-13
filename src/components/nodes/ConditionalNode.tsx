@@ -1,7 +1,8 @@
 import { GitBranch } from 'lucide-react';
 import { Handle, Position } from 'reactflow';
+import type { ConditionalNodeProps } from '../../types/nodeProps';
 
-export function ConditionalNode({ data }: any) {
+export function ConditionalNode({ data }: ConditionalNodeProps) {
   return (
     <div className="rounded-lg border-2 border-pink-500 bg-white shadow-md min-w-[200px] max-w-[300px] relative">
       <Handle

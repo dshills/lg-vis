@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { addEdge, applyEdgeChanges, applyNodeChanges } from 'reactflow';
 import type { Connection, Edge, EdgeChange, Node, NodeChange } from 'reactflow';
-import type { Workflow, StateSchema, Reducer } from '../types/workflow';
+import type { Workflow, StateSchema, Reducer, NodeType } from '../types/workflow';
 
 interface WorkflowState {
   // Current workflow
@@ -22,7 +22,7 @@ interface WorkflowState {
   // Node operations
   onNodesChange: (changes: NodeChange[]) => void;
   addNode: (type: string, position: { x: number; y: number }) => void;
-  updateNodeData: (nodeId: string, data: any) => void;
+  updateNodeData: (nodeId: string, data: Record<string, unknown>) => void;
   deleteNode: (nodeId: string) => void;
   setSelectedNode: (nodeId: string | null) => void;
 
@@ -38,6 +38,7 @@ interface WorkflowState {
 
   // Reducer operations
   updateReducer: (fieldName: string, reducer: Reducer) => void;
+  removeReducer: (fieldName: string) => void;
 }
 
 const createDefaultWorkflow = (name: string): Workflow => ({
@@ -109,17 +110,27 @@ export const useWorkflowStore = create<WorkflowState>((set, get) => ({
       nodes: [...get().nodes, newNode],
     });
 
-    // Update workflow
+    // Update workflow immutably
     const { workflow } = get();
     if (workflow) {
-      workflow.nodes.push({
-        id: newNode.id,
-        type: type as any,
-        position,
-        data: newNode.data,
+      set({
+        workflow: {
+          ...workflow,
+          nodes: [
+            ...workflow.nodes,
+            {
+              id: newNode.id,
+              type: type as NodeType,
+              position,
+              data: newNode.data,
+            },
+          ],
+          metadata: {
+            ...workflow.metadata,
+            modified: new Date().toISOString(),
+          },
+        },
       });
-      workflow.metadata.modified = new Date().toISOString();
-      set({ workflow: { ...workflow } });
     }
   },
 
@@ -130,14 +141,25 @@ export const useWorkflowStore = create<WorkflowState>((set, get) => ({
       ),
     });
 
-    // Update workflow
+    // Update workflow immutably
     const { workflow } = get();
     if (workflow) {
       const nodeIndex = workflow.nodes.findIndex((n) => n.id === nodeId);
       if (nodeIndex !== -1) {
-        workflow.nodes[nodeIndex].data = { ...workflow.nodes[nodeIndex].data, ...data };
-        workflow.metadata.modified = new Date().toISOString();
-        set({ workflow: { ...workflow } });
+        set({
+          workflow: {
+            ...workflow,
+            nodes: workflow.nodes.map((node, idx) =>
+              idx === nodeIndex
+                ? { ...node, data: { ...node.data, ...data } }
+                : node
+            ),
+            metadata: {
+              ...workflow.metadata,
+              modified: new Date().toISOString(),
+            },
+          },
+        });
       }
     }
   },
@@ -148,13 +170,20 @@ export const useWorkflowStore = create<WorkflowState>((set, get) => ({
       edges: get().edges.filter((edge) => edge.source !== nodeId && edge.target !== nodeId),
     });
 
-    // Update workflow
+    // Update workflow immutably
     const { workflow } = get();
     if (workflow) {
-      workflow.nodes = workflow.nodes.filter((n) => n.id !== nodeId);
-      workflow.edges = workflow.edges.filter((e) => e.source !== nodeId && e.target !== nodeId);
-      workflow.metadata.modified = new Date().toISOString();
-      set({ workflow: { ...workflow } });
+      set({
+        workflow: {
+          ...workflow,
+          nodes: workflow.nodes.filter((n) => n.id !== nodeId),
+          edges: workflow.edges.filter((e) => e.source !== nodeId && e.target !== nodeId),
+          metadata: {
+            ...workflow.metadata,
+            modified: new Date().toISOString(),
+          },
+        },
+      });
     }
   },
 
@@ -180,17 +209,27 @@ export const useWorkflowStore = create<WorkflowState>((set, get) => ({
       edges: addEdge(edge, get().edges),
     });
 
-    // Update workflow
+    // Update workflow immutably
     const { workflow } = get();
     if (workflow) {
-      workflow.edges.push({
-        id: edge.id,
-        source: edge.source,
-        target: edge.target,
-        type: 'default',
+      set({
+        workflow: {
+          ...workflow,
+          edges: [
+            ...workflow.edges,
+            {
+              id: edge.id,
+              source: edge.source,
+              target: edge.target,
+              type: 'default',
+            },
+          ],
+          metadata: {
+            ...workflow.metadata,
+            modified: new Date().toISOString(),
+          },
+        },
       });
-      workflow.metadata.modified = new Date().toISOString();
-      set({ workflow: { ...workflow } });
     }
   },
 
@@ -199,12 +238,19 @@ export const useWorkflowStore = create<WorkflowState>((set, get) => ({
       edges: get().edges.filter((edge) => edge.id !== edgeId),
     });
 
-    // Update workflow
+    // Update workflow immutably
     const { workflow } = get();
     if (workflow) {
-      workflow.edges = workflow.edges.filter((e) => e.id !== edgeId);
-      workflow.metadata.modified = new Date().toISOString();
-      set({ workflow: { ...workflow } });
+      set({
+        workflow: {
+          ...workflow,
+          edges: workflow.edges.filter((e) => e.id !== edgeId),
+          metadata: {
+            ...workflow.metadata,
+            modified: new Date().toISOString(),
+          },
+        },
+      });
     }
   },
 
@@ -215,31 +261,79 @@ export const useWorkflowStore = create<WorkflowState>((set, get) => ({
   updateStateSchema: (schema) => {
     const { workflow } = get();
     if (workflow) {
-      workflow.stateSchema = schema;
-      workflow.metadata.modified = new Date().toISOString();
-      set({ workflow: { ...workflow } });
+      set({
+        workflow: {
+          ...workflow,
+          stateSchema: schema,
+          metadata: {
+            ...workflow.metadata,
+            modified: new Date().toISOString(),
+          },
+        },
+      });
     }
   },
 
   addStateField: (name, type) => {
     const { workflow } = get();
     if (workflow) {
-      workflow.stateSchema.fields.push({
-        name,
-        type,
-        required: false,
+      set({
+        workflow: {
+          ...workflow,
+          stateSchema: {
+            ...workflow.stateSchema,
+            fields: [
+              ...workflow.stateSchema.fields,
+              {
+                name,
+                type,
+                required: false,
+              },
+            ],
+          },
+          metadata: {
+            ...workflow.metadata,
+            modified: new Date().toISOString(),
+          },
+        },
       });
-      workflow.metadata.modified = new Date().toISOString();
-      set({ workflow: { ...workflow } });
     }
   },
 
   updateReducer: (fieldName, reducer) => {
     const { workflow } = get();
     if (workflow) {
-      workflow.reducers[fieldName] = reducer;
-      workflow.metadata.modified = new Date().toISOString();
-      set({ workflow: { ...workflow } });
+      set({
+        workflow: {
+          ...workflow,
+          reducers: {
+            ...workflow.reducers,
+            [fieldName]: reducer,
+          },
+          metadata: {
+            ...workflow.metadata,
+            modified: new Date().toISOString(),
+          },
+        },
+      });
+    }
+  },
+
+  removeReducer: (fieldName) => {
+    const { workflow } = get();
+    if (workflow && workflow.reducers[fieldName]) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { [fieldName]: _removed, ...remainingReducers } = workflow.reducers;
+      set({
+        workflow: {
+          ...workflow,
+          reducers: remainingReducers,
+          metadata: {
+            ...workflow.metadata,
+            modified: new Date().toISOString(),
+          },
+        },
+      });
     }
   },
 }));

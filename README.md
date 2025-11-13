@@ -4,7 +4,7 @@ A visual workflow builder for creating and managing [langgraph-go](https://githu
 
 ## Features
 
-### Phase 1 (Current) - Foundation & Core Functionality
+### Phase 1 - Foundation & Core Functionality
 - ✅ **Visual Workflow Canvas**: Interactive drag-and-drop workflow builder powered by React Flow
 - ✅ **Custom Node Types**:
   - **Start Node**: Entry point for workflows
@@ -17,13 +17,37 @@ A visual workflow builder for creating and managing [langgraph-go](https://githu
 - ✅ **Workflow Management**: Save, load, import, and export workflows
 - ✅ **Type-Safe State Management**: Zustand-powered state with TypeScript
 
+### Phase 2 (Current) - Workflow Features
+- ✅ **State Schema Editor**: Visual editor to define workflow state structure
+  - Add/remove state fields with Go types (string, int, []string, map, etc.)
+  - Mark fields as required
+  - Add descriptions to fields
+- ✅ **Reducer Configuration**: Configure how state fields merge
+  - Overwrite strategy (replace with new value)
+  - Append strategy (add to arrays/slices)
+  - Merge strategy (deep merge for maps)
+  - Custom reducer code for complex logic
+- ✅ **Workflow Validation**: Real-time validation with detailed error/warning messages
+  - Cycle detection (prevents infinite loops)
+  - Disconnected node detection
+  - Unreachable node detection
+  - Missing start/end node warnings
+  - Dead-end detection
+- ✅ **Parallel Execution Groups**: Automatic detection and visualization
+  - Visual overlay showing nodes that can execute in parallel
+  - Grouped bounding boxes with color coding
+  - Toggle on/off for cleaner view
+- ✅ **Validation Toolbar**: Real-time status indicator
+  - Shows workflow validity (Valid/Warnings/Invalid)
+  - Expandable details panel with all issues
+  - Lists parallel execution opportunities
+
 ### Upcoming Features
-- 🚧 **State Schema Editor**: Define and manage workflow state structure
-- 🚧 **Reducer Configuration**: Configure state merge logic
-- 🚧 **Go Code Generation**: Export workflows as runnable Go code
+- 🚧 **Go Code Generation**: Export workflows as runnable langgraph-go code
 - 🚧 **Workflow Simulation**: Dry-run and debug workflows
 - 🚧 **Checkpoint Visualization**: View and manage workflow checkpoints
 - 🚧 **Example Gallery**: Pre-built workflow templates
+- 🚧 **Auto-layout**: Automatically arrange nodes for optimal readability
 
 ## Tech Stack
 
@@ -107,6 +131,45 @@ npm run preview
 - Exit point for workflow
 - Only one connection point (input)
 - No configuration needed
+
+### Managing State Schema
+
+The State Schema tab allows you to define the structure of your workflow's state:
+
+1. Click the **"State Schema"** tab at the top
+2. Click **"Add Field"** to create a new state field
+3. Enter the field name and select the Go type
+4. Click on a field to expand its details:
+   - Change the type
+   - Add a description
+   - Mark as required
+   - Configure the reducer strategy:
+     - **Overwrite**: Replace the old value with new (default)
+     - **Append**: Add to existing arrays/slices
+     - **Merge**: Deep merge for maps/objects
+     - **Custom**: Write your own reducer function in Go
+
+### Workflow Validation
+
+The validation toolbar in the header shows real-time workflow status:
+
+- **Green (Valid)**: No errors or warnings
+- **Yellow (Warnings)**: Workflow will run but has potential issues
+- **Red (Invalid)**: Workflow has errors that must be fixed
+
+Click the validation button to see detailed information about:
+- Errors (must fix): Cycles, invalid structure
+- Warnings (optional): Disconnected nodes, unreachable nodes, missing end nodes
+- Parallel execution groups detected
+
+### Parallel Execution Groups
+
+The workflow builder automatically detects nodes that can run in parallel:
+
+1. Toggle **"Parallel Groups"** button in the top-left to show/hide
+2. Parallel nodes are highlighted with colored bounding boxes
+3. Each group shows how many nodes can execute concurrently
+4. View all groups in the validation toolbar details
 
 ### Saving and Loading
 
