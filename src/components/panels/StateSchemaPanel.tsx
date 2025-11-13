@@ -109,24 +109,29 @@ export function StateSchemaPanel() {
   };
 
   return (
-    <div className="h-full flex flex-col bg-white">
+    <div className="h-full flex flex-col bg-gradient-to-br from-slate-50 to-blue-50">
       {/* Header */}
-      <div className="p-4 border-b border-gray-200">
-        <div className="flex items-center gap-2">
-          <Database className="text-blue-600" size={24} />
+      <div className="p-6 border-b border-gray-200 bg-white/80 backdrop-blur-md">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl">
+            <Database className="text-white" size={28} />
+          </div>
           <div>
-            <h2 className="text-lg font-semibold text-gray-800">State Schema</h2>
-            <p className="text-sm text-gray-500">Define workflow state structure</p>
+            <h2 className="text-2xl font-bold text-gray-900">State Schema</h2>
+            <p className="text-sm text-gray-600 font-medium">Define workflow state structure</p>
           </div>
         </div>
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto p-4">
+      <div className="flex-1 overflow-y-auto p-6">
         {/* Add new field */}
-        <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-          <h3 className="text-sm font-semibold text-gray-700 mb-3">Add State Field</h3>
-          <div className="space-y-2">
+        <div className="mb-6 p-5 bg-white/90 backdrop-blur-sm rounded-2xl border-2 border-blue-200 shadow-lg">
+          <h3 className="text-base font-bold text-gray-800 mb-4 flex items-center gap-2">
+            <Plus size={20} className="text-blue-600" />
+            Add State Field
+          </h3>
+          <div className="space-y-3">
             <div>
               <input
                 type="text"
@@ -134,23 +139,23 @@ export function StateSchemaPanel() {
                 onChange={(e) => handleFieldNameChange(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleAddField()}
                 placeholder="Field name (e.g., userInput, messageCount)"
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+                className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 transition-all duration-200 font-medium ${
                   fieldError
-                    ? 'border-red-300 focus:ring-red-500'
-                    : 'border-gray-300 focus:ring-blue-500'
+                    ? 'border-red-300 focus:ring-red-500 bg-red-50'
+                    : 'border-gray-200 focus:ring-blue-500 focus:border-transparent bg-gray-50 hover:bg-white'
                 }`}
               />
               {fieldError && (
-                <div className="flex items-center gap-1 mt-1 text-xs text-red-600">
-                  <AlertCircle size={12} />
-                  <span>{fieldError}</span>
+                <div className="flex items-center gap-2 mt-2 text-sm text-red-700 bg-red-100 px-3 py-2 rounded-lg">
+                  <AlertCircle size={16} />
+                  <span className="font-medium">{fieldError}</span>
                 </div>
               )}
             </div>
             <select
               value={newFieldType}
               onChange={(e) => setNewFieldType(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 hover:bg-white cursor-pointer font-medium"
             >
               <option value="string">string</option>
               <option value="int">int</option>
@@ -165,9 +170,9 @@ export function StateSchemaPanel() {
             <button
               onClick={handleAddField}
               disabled={!newFieldName.trim()}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed font-bold shadow-lg hover:shadow-xl hover:scale-[1.02]"
             >
-              <Plus size={18} />
+              <Plus size={20} />
               Add Field
             </button>
           </div>
@@ -176,10 +181,12 @@ export function StateSchemaPanel() {
         {/* Field list */}
         <div className="space-y-4">
           {workflow.stateSchema.fields.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              <Database size={48} className="mx-auto mb-2 opacity-30" />
-              <p>No state fields defined yet</p>
-              <p className="text-sm">Add fields to define your workflow state</p>
+            <div className="text-center py-12 text-gray-500 bg-white/50 backdrop-blur-sm rounded-2xl border-2 border-dashed border-gray-300">
+              <div className="p-4 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl w-fit mx-auto mb-4">
+                <Database size={56} className="opacity-40" />
+              </div>
+              <p className="text-lg font-semibold text-gray-700">No state fields defined yet</p>
+              <p className="text-sm text-gray-600 mt-1">Add fields above to define your workflow state</p>
             </div>
           ) : (
             workflow.stateSchema.fields.map((field) => (
@@ -226,50 +233,51 @@ function StateFieldEditor({
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className="border border-gray-200 rounded-lg p-4 bg-white">
-      <div className="flex items-start justify-between mb-3">
+    <div className="border-2 border-gray-200 rounded-2xl p-5 bg-white/90 backdrop-blur-sm shadow-md hover:shadow-lg transition-all duration-200">
+      <div className="flex items-start justify-between mb-4">
         <div className="flex-1">
-          <div className="flex items-center gap-2 mb-1">
-            <span className="font-mono font-semibold text-gray-800">{field.name}</span>
-            <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">
+          <div className="flex items-center gap-2 mb-2 flex-wrap">
+            <span className="font-mono font-bold text-gray-900 text-base">{field.name}</span>
+            <span className="text-xs font-semibold bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 px-3 py-1 rounded-lg border border-blue-300">
               {field.type}
             </span>
             {field.required && (
-              <span className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded">
+              <span className="text-xs font-semibold bg-gradient-to-r from-red-100 to-rose-200 text-red-800 px-3 py-1 rounded-lg border border-red-300">
                 required
               </span>
             )}
           </div>
           {field.description && (
-            <p className="text-sm text-gray-600">{field.description}</p>
+            <p className="text-sm text-gray-700 leading-relaxed">{field.description}</p>
           )}
         </div>
         <button
           onClick={() => onRemove(field.name)}
-          className="p-1 hover:bg-red-50 text-red-600 rounded transition-colors"
+          className="p-2 hover:bg-red-50 text-red-600 rounded-lg transition-all duration-200 hover:scale-110"
         >
-          <Trash2 size={16} />
+          <Trash2 size={18} />
         </button>
       </div>
 
       <button
         onClick={() => setExpanded(!expanded)}
-        className="text-sm text-blue-600 hover:text-blue-700 mb-2"
+        className="text-sm font-semibold text-blue-600 hover:text-blue-700 mb-3 flex items-center gap-1 transition-colors"
       >
-        {expanded ? '▼ Hide details' : '▶ Show details'}
+        <span>{expanded ? '▼' : '▶'}</span>
+        {expanded ? 'Hide details' : 'Show details'}
       </button>
 
       {expanded && (
-        <div className="space-y-3 pt-3 border-t border-gray-100">
+        <div className="space-y-4 pt-4 border-t-2 border-gray-200">
           {/* Type */}
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-bold text-gray-700 mb-2">
               Type
             </label>
             <select
               value={field.type}
               onChange={(e) => onUpdateType(field.name, e.target.value)}
-              className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2.5 text-sm border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 hover:bg-white cursor-pointer font-medium"
             >
               <option value="string">string</option>
               <option value="int">int</option>
@@ -285,14 +293,14 @@ function StateFieldEditor({
 
           {/* Description */}
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-bold text-gray-700 mb-2">
               Description
             </label>
             <textarea
               value={field.description || ''}
               onChange={(e) => onUpdateDescription(field.name, e.target.value)}
               rows={2}
-              className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+              className="w-full px-4 py-2.5 text-sm border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none transition-all duration-200 bg-gray-50 hover:bg-white"
               placeholder="Optional description"
             />
           </div>
